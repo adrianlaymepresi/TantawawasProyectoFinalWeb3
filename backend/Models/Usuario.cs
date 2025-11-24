@@ -7,16 +7,21 @@ namespace backend.Models
         public int Id { get; set; }
 
         [Required, MaxLength(100)]
-        public string Nombre { get; set; } = string.Empty;
+        public string Nombres { get; set; } = string.Empty;
 
         [Required, MaxLength(100)]
-        public string Apellido { get; set; } = string.Empty;
+        public string Apellidos { get; set; } = string.Empty;
+
+        [Required]
+        public int CarnetIdentidad { get; set; }
 
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Required]
         public string Password { get; set; } = string.Empty;
+
+        public bool EsUsuarioActivo { get; set; } = true;
 
         [Required]
         public int RolId { get; set; }
