@@ -8,5 +8,7 @@ namespace backend.Models
 
         [Required, MaxLength(50)]
         public string NombreRol { get; set; } = string.Empty;
+
+        public List<Usuario> Usuarios { get; set; } = new List<Usuario>();
     }
 }

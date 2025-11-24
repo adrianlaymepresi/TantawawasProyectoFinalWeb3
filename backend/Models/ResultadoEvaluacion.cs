@@ -1,0 +1,20 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace backend.Models
+{
+    public class ResultadoEvaluacion
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public int EstudianteId { get; set; }
+        public Usuario Estudiante { get; set; } = null!;
+
+        [Required]
+        public int EvaluacionId { get; set; }
+        public Evaluacion Evaluacion { get; set; } = null!;
+
+        [Required]
+        public decimal Nota { get; set; }
+    }
+}
