@@ -1,4 +1,5 @@
 using backend.Data;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<backend.Services.RolService>();
 builder.Services.AddScoped<backend.Services.UsuarioService>();
 builder.Services.AddScoped<backend.Services.CursoService>();
+builder.Services.AddScoped<MaterialService>();
 
 ////////////////////////////////////////////////////////////
 
