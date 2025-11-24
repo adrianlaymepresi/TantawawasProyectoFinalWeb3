@@ -10,9 +10,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("MiBDEnMemoria"));
 
 // Registrar servicios personalizados
-builder.Services.AddScoped<backend.Services.RolService>();
-builder.Services.AddScoped<backend.Services.UsuarioService>();
-builder.Services.AddScoped<backend.Services.CursoService>();
+builder.Services.AddScoped<RolService>();
+builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<CursoService>();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+        x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
 ////////////////////////////////////////////////////////////
 
