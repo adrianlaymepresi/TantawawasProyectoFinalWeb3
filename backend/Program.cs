@@ -7,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Base de datos en memoria temportal para probar las api
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("MiBDEnMemoria"));
+
+// Registrar servicios personalizados
+builder.Services.AddScoped<backend.Services.RolService>();
+
 ////////////////////////////////////////////////////////////
 
 // Add services to the container.
