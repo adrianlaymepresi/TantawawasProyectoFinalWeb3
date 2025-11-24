@@ -13,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<RolService>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CursoService>();
+builder.Services.AddScoped<InscripcionService>();
+builder.Services.AddScoped<MaterialService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
