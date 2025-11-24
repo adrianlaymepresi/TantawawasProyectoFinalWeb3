@@ -10,6 +10,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Registrar servicios personalizados
 builder.Services.AddScoped<backend.Services.RolService>();
+builder.Services.AddScoped<backend.Services.UsuarioService>();
 
 ////////////////////////////////////////////////////////////
 
