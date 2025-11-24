@@ -1,4 +1,13 @@
+using backend.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+////////////////////////////////////////////////////////////
+// Base de datos en memoria temportal para probar las api
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseInMemoryDatabase("MiBDEnMemoria"));
+////////////////////////////////////////////////////////////
 
 // Add services to the container.
 
