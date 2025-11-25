@@ -15,6 +15,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<CursoService>();
 builder.Services.AddScoped<InscripcionService>();
 builder.Services.AddScoped<MaterialService>();
+builder.Services.AddScoped<MensajeService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
