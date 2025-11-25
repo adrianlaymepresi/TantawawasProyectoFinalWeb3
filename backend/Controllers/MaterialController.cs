@@ -1,4 +1,5 @@
-﻿using backend.Models.DTOs;
+﻿using backend.Models;
+using backend.Models.DTOs;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace backend.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpGet("obtenerMateriales")]
         public async Task<IActionResult> ObtenerTodos()
         {
             try
@@ -30,7 +31,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("curso/{cursoId}")]
+        [HttpGet("obtenerMaterialesPorCurso/{cursoId}")]
         public async Task<IActionResult> ObtenerPorCurso(int cursoId)
         {
             try
@@ -44,7 +45,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("obtenerMaterialPorId/{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             try
@@ -58,13 +59,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Crear([FromBody] MaterialCrearDto dto)
+        [HttpPost("crearMaterial")]
+        public async Task<IActionResult> CrearMaterial(MaterialCrearDto dto)
         {
             try
             {
                 var material = await _service.CrearAsync(dto);
-                return CreatedAtAction(nameof(ObtenerPorId), new { id = material.Id }, material);
+                return Ok(new { message = "Material de curso creado", material });
             }
             catch (Exception ex)
             {
@@ -72,13 +73,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Actualizar([FromBody] MaterialActualizarDto dto)
+        [HttpPut("actualizarMaterial")]
+        public async Task<IActionResult> ActualizarMaterial(MaterialActualizarDto dto)
         {
             try
             {
                 var material = await _service.ActualizarAsync(dto);
-                return Ok(material);
+                return Ok(new { message = "Material de curso actualizado", material });
             }
             catch (Exception ex)
             {
@@ -86,12 +87,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Eliminar(int id)
+        [HttpDelete("eliminarMaterial")]
+        public async Task<IActionResult> Eliminar(MaterialIdDto dto)
         {
             try
             {
-                var material = await _service.EliminarFisicoAsync(new MaterialIdDto { Id = id });
+                var material = await _service.EliminarFisicoAsync(dto);
                 return Ok(new { message = "Material eliminado exitosamente", material });
             }
             catch (Exception ex)

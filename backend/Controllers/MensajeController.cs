@@ -100,12 +100,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> EliminarMensaje(int id)
+        [HttpDelete("eliminarMensaje")]
+        public async Task<IActionResult> EliminarMensaje(MensajeIdDto dto)
         {
             try
             {
-                var mensaje = await _service.EliminarFisicoAsync(new MensajeIdDto { Id = id });
+                var mensaje = await _service.EliminarFisicoAsync(dto);
                 return Ok(new { message = "Mensaje eliminado exitosamente", mensaje });
             }
             catch (Exception ex)
