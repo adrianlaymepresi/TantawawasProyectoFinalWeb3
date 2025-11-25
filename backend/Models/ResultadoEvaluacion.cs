@@ -15,6 +15,7 @@ namespace backend.Models
         public Evaluacion Evaluacion { get; set; } = null!;
 
         [Required]
+        [Range(0, 100, ErrorMessage = "La nota debe estar entre 0 y 100")]
         public decimal Nota { get; set; }
     }
 }
