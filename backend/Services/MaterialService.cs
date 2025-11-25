@@ -2,6 +2,7 @@
 using backend.Models;
 using backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace backend.Services
 {
@@ -33,6 +34,20 @@ namespace backend.Services
                 throw new Exception("Material del curso no encontrado");
 
             return material;
+        }
+
+        public async Task<List<Material>> BuscarPorTituloAsync(string titulo)
+        {
+            var materiales = await _context.Materiales
+                .Where(m => m.Titulo.ToLower().Contains(titulo.Trim().ToLower()))
+                .Include(m => m.Curso)
+                .OrderByDescending(m => m.FechaCreacion)
+                .ToListAsync();
+
+            if (!materiales.Any())
+                throw new Exception("No se encontraron materiales con ese título");
+
+            return materiales;
         }
 
         public async Task<Material> CrearAsync(MaterialCrearDto dto)

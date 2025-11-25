@@ -58,6 +58,23 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("buscarEvaluacionPorTitulo/{titulo}")]
+        public async Task<IActionResult> BuscarPorTitulo(string titulo)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(titulo))
+                    return BadRequest(new { message = "El título de búsqueda no puede estar vacío" });
+
+                var evaluaciones = await _service.BuscarPorTituloAsync(titulo);
+                return Ok(evaluaciones);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("crearEvaluacion")]
         public async Task<IActionResult> CrearEvaluacion(EvaluacionCrearDto dto)
         {

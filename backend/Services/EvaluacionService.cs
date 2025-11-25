@@ -46,6 +46,21 @@ namespace backend.Services
             return evaluacion;
         }
 
+        public async Task<List<Evaluacion>> BuscarPorTituloAsync(string titulo)
+        {
+            var evaluaciones = await _context.Evaluaciones
+                .Where(e => e.Titulo.ToLower().Contains(titulo.Trim().ToLower()))
+                .Include(e => e.Curso)
+                .Include(e => e.Resultados)
+                .OrderByDescending(e => e.FechaCreacion)
+                .ToListAsync();
+
+            if (!evaluaciones.Any())
+                throw new Exception("No se encontraron evaluaciones con ese título");
+
+            return evaluaciones;
+        }
+
         public async Task<Evaluacion> CrearAsync(EvaluacionCrearDto dto)
         {
             var cursoExiste = await _context.Cursos.AnyAsync(c => c.Id == dto.CursoId);
