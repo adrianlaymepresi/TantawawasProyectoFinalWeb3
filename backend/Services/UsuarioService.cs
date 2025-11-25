@@ -67,6 +67,10 @@ namespace backend.Services
             if (await _context.Usuarios.AnyAsync(u => u.CarnetIdentidad == dto.CarnetIdentidad))
                 throw new Exception("El carnet de identidad ya está registrado");
 
+            var rolExiste = await _context.Roles.AnyAsync(r => r.Id == dto.RolId);
+            if (!rolExiste)
+                throw new Exception("El rol especificado no existe");
+
             var usuario = new Usuario
             {
                 Nombres = dto.Nombres,
@@ -91,6 +95,10 @@ namespace backend.Services
 
             if (await _context.Usuarios.AnyAsync(u => u.CarnetIdentidad == dto.CarnetIdentidad && u.Id != dto.Id))
                 throw new Exception("El carnet de identidad ya está registrado por otro usuario");
+
+            var rolExiste = await _context.Roles.AnyAsync(r => r.Id == dto.RolId);
+            if (!rolExiste)
+                throw new Exception("El rol especificado no existe");
 
             usuario.Nombres = dto.Nombres;
             usuario.Apellidos = dto.Apellidos;
