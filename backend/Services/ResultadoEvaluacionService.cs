@@ -62,13 +62,17 @@ namespace backend.Services
             if (!estudianteExiste)
                 throw new Exception("El estudiante especificado no existe");
 
-            var evaluacionExiste = await _context.Evaluaciones.AnyAsync(e => e.Id == dto.EvaluacionId);
-            if (!evaluacionExiste)
+            var evaluacion = await _context.Evaluaciones.FindAsync(dto.EvaluacionId);
+            if (evaluacion == null)
                 throw new Exception("La evaluación especificada no existe");
+
+            var inscripcionExistente = await _context.Inscripciones
+                .AnyAsync(i => i.EstudianteId == dto.EstudianteId && i.CursoId == evaluacion.CursoId);
+            if (!inscripcionExistente)
+                throw new Exception("El estudiante especificado no está inscrito en este curso");
 
             var resultadoExistente = await _context.ResultadosEvaluaciones
                 .AnyAsync(r => r.EstudianteId == dto.EstudianteId && r.EvaluacionId == dto.EvaluacionId);
-
             if (resultadoExistente)
                 throw new Exception("Ya existe un resultado para este estudiante en esta evaluación");
 
