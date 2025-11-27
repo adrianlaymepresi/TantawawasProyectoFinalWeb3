@@ -25,6 +25,19 @@ builder.Services.AddControllers()
 
 ////////////////////////////////////////////////////////////
 
+// CREACION DE POLITICAS DE AUTORIZACION
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("EsAdmin", policy => policy.RequireRole("Administrador"));
+    options.AddPolicy("EsDocente", policy => policy.RequireRole("Docente"));
+    options.AddPolicy("EsEstudiante", policy => policy.RequireRole("Estudiante"));
+    options.AddPolicy("AdminODocente", policy =>
+        policy.RequireRole("Administrador", "Docente"));
+});
+
+////////////////////////////////////////////////////////////
+
 // Add services to the container.
 
 //builder.Services.AddControllers();
