@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Base de datos en memoria temportal para probar las api
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("MiBDEnMemoria"));
+
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Registrar servicios personalizados
 builder.Services.AddScoped<RolService>();
@@ -32,8 +37,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("EsAdmin", policy => policy.RequireRole("Administrador"));
     options.AddPolicy("EsDocente", policy => policy.RequireRole("Docente"));
     options.AddPolicy("EsEstudiante", policy => policy.RequireRole("Estudiante"));
-    options.AddPolicy("AdminODocente", policy =>
-        policy.RequireRole("Administrador", "Docente"));
 });
 
 ////////////////////////////////////////////////////////////
