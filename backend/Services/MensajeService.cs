@@ -87,6 +87,14 @@ namespace backend.Services
             if (mensaje == null)
                 throw new Exception("Mensaje no encontrado");
 
+            var cursoExiste = await _context.Cursos.AnyAsync(c => c.Id == mensaje.CursoId);
+            if (!cursoExiste)
+                throw new Exception("El curso asignado al mensaje ya no existe");
+
+            var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.Id == mensaje.UsuarioId);
+            if (!usuarioExiste)
+                throw new Exception("El usuario asignado al mensaje ya no existe");
+
             if (!string.IsNullOrEmpty(dto.Contenido))
                 mensaje.Contenido = dto.Contenido;
 
@@ -94,7 +102,6 @@ namespace backend.Services
                 mensaje.ArchivoAdjunto = dto.ArchivoAdjunto;
 
             await _context.SaveChangesAsync();
-
             return mensaje;
         }
 

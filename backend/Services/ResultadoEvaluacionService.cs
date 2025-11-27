@@ -95,10 +95,17 @@ namespace backend.Services
             if (resultado == null)
                 throw new Exception("Resultado de evaluación no encontrado");
 
+            var estudianteExiste = await _context.Usuarios.AnyAsync(u => u.Id == resultado.EstudianteId);
+            if (!estudianteExiste)
+                throw new Exception("El estudiante asignado a este resultado ya no existe");
+
+            var evaluacionExiste = await _context.Evaluaciones.AnyAsync(e => e.Id == resultado.EvaluacionId);
+            if (!evaluacionExiste)
+                throw new Exception("La evaluación asignada a este resultado ya no existe");
+
             resultado.Nota = dto.Nota;
 
             await _context.SaveChangesAsync();
-
             return resultado;
         }
 

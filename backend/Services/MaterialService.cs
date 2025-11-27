@@ -76,6 +76,10 @@ namespace backend.Services
             if (material == null)
                 throw new Exception("Material de curso no encontrado");
 
+            var cursoExiste = await _context.Cursos.AnyAsync(c => c.Id == material.CursoId);
+            if (!cursoExiste)
+                throw new Exception("El curso asignado al material ya no existe");
+
             if (!string.IsNullOrEmpty(dto.Titulo))
                 material.Titulo = dto.Titulo;
 
@@ -83,7 +87,6 @@ namespace backend.Services
                 material.ArchivoAdjunto = dto.ArchivoAdjunto;
 
             await _context.SaveChangesAsync();
-
             return material;
         }
 
