@@ -1,5 +1,6 @@
 ﻿using backend.Models.DTOs;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -15,6 +16,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerUsuarios")]
         public async Task<IActionResult> ObtenerUsuarios()
         {
@@ -132,6 +134,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpDelete("eliminarUsuarioFisico")]
         public async Task<IActionResult> EliminarUsuarioFisico(UsuarioIdDto dto)
         {
@@ -139,6 +142,20 @@ namespace backend.Controllers
             {
                 var usuario = await _service.EliminarFisicoAsync(dto);
                 return Ok(new { mensaje = "Usuario eliminado permanentemente", usuario });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UsuarioLoginDto dto)
+        {
+            try
+            {
+                var token = await _service.LoginAsync(dto);
+                return Ok(new { token });
             }
             catch (Exception ex)
             {

@@ -70,4 +70,13 @@ namespace backend.Models.DTOs
         [Required]
         public string NombreCompleto { get; set; } = string.Empty;
     }
+
+    public class UsuarioLoginDto
+    {
+        [Required]
+        public int CarnetIdentidad { get; set; }
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
 }

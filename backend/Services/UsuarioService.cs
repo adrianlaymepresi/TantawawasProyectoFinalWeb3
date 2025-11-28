@@ -10,10 +10,12 @@ namespace backend.Services
     public class UsuarioService
     {
         private readonly AppDbContext _context;
+        private readonly JwtService _jwtService;
 
-        public UsuarioService(AppDbContext context)
+        public UsuarioService(AppDbContext context, JwtService jwtService)
         {
             _context = context;
+            _jwtService = jwtService;
         }
 
         public async Task<List<Usuario>> ObtenerTodosAsync()
@@ -142,6 +144,24 @@ namespace backend.Services
             _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return usuario;
+        }
+
+        public async Task<string> LoginAsync(UsuarioLoginDto dto)
+        {
+            var usuario = await _context.Usuarios
+                .Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.CarnetIdentidad == dto.CarnetIdentidad);
+
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            if (usuario.Password != HashPassword(dto.Password))
+                throw new Exception("Contraseña incorrecta");
+
+            if (!usuario.EsUsuarioActivo)
+                throw new Exception("El usuario está desactivado");
+
+            return _jwtService.GenerarToken(usuario);
         }
 
         private string HashPassword(string password)
