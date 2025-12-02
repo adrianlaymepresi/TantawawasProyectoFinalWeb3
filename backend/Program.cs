@@ -1,10 +1,10 @@
 using backend.Data;
 using backend.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,13 +28,16 @@ builder.Services.AddScoped<EvaluacionService>();
 builder.Services.AddScoped<ResultadoEvaluacionService>();
 builder.Services.AddScoped<JwtService>();
 
+// Agregar HttpContextAccessor para acceder al contexto HTTP en los servicios
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddControllers()
     .AddJsonOptions(x =>
         x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
 ////////////////////////////////////////////////////////////
 
-// CONFIGURACION DE AUTENTICACION JWT
+// CONFIGURACION DE AUTENTICACION JWT CON SOPORTE PARA COOKIES
 
 var key = builder.Configuration["Jwt:Key"];
 
@@ -49,7 +52,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
+            NameClaimType = ClaimTypes.Name,
+            RoleClaimType = ClaimTypes.Role
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                
+                if (string.IsNullOrEmpty(token))
+                {
+                    token = context.Request.Cookies["AuthToken"];
+                }
+
+                context.Token = token;
+                return Task.CompletedTask;
+            }
         };
     });
 

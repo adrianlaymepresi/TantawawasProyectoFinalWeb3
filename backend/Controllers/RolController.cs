@@ -1,11 +1,13 @@
 ﻿using backend.Models.DTOs;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class RolController : ControllerBase
     {
         private readonly RolService _service;

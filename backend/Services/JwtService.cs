@@ -19,6 +19,8 @@ namespace backend.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, $"{usuario.Nombres} {usuario.Apellidos}"),
                 new Claim("Carnet", usuario.CarnetIdentidad.ToString()),
                 new Claim(ClaimTypes.Role, usuario.Rol.NombreRol)
             };

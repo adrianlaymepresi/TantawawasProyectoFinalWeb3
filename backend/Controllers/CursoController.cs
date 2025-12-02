@@ -1,11 +1,13 @@
 ﻿using backend.Models.DTOs;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/curso")]
+    [Authorize]
     public class CursoController : ControllerBase
     {
         private readonly CursoService _service;

@@ -1,11 +1,13 @@
 ﻿using backend.Models.DTOs;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/inscripcion")]
+    [Authorize]
     public class InscripcionController : ControllerBase
     {
         private readonly InscripcionService _service;

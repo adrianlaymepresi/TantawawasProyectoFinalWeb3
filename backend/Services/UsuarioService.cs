@@ -1,6 +1,7 @@
 ﻿using backend.Data;
 using backend.Models;
 using backend.Models.DTOs;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,11 +12,13 @@ namespace backend.Services
     {
         private readonly AppDbContext _context;
         private readonly JwtService _jwtService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsuarioService(AppDbContext context, JwtService jwtService)
+        public UsuarioService(AppDbContext context, JwtService jwtService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _jwtService = jwtService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<Usuario>> ObtenerTodosAsync()
@@ -161,7 +164,25 @@ namespace backend.Services
             if (!usuario.EsUsuarioActivo)
                 throw new Exception("El usuario está desactivado");
 
-            return _jwtService.GenerarToken(usuario);
+            var token = _jwtService.GenerarToken(usuario);
+
+            // Establecer la cookie HttpOnly con el token
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.Now.AddMinutes(120)
+            };
+
+            _httpContextAccessor.HttpContext?.Response.Cookies.Append("AuthToken", token, cookieOptions);
+
+            return token;
+        }
+
+        public void Logout()
+        {
+            _httpContextAccessor.HttpContext?.Response.Cookies.Delete("AuthToken");
         }
 
         private string HashPassword(string password)

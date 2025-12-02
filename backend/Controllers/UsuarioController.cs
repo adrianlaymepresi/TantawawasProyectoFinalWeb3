@@ -7,6 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/usuario")]
+    [Authorize]
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _service;
@@ -78,6 +79,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPost("crearUsuario")]
         public async Task<IActionResult> CrearUsuario(UsuarioCrearDto dto)
         {
@@ -149,13 +151,28 @@ namespace backend.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(UsuarioLoginDto dto)
         {
             try
             {
                 var token = await _service.LoginAsync(dto);
-                return Ok(new { token });
+                return Ok(new { token, mensaje = "Login exitoso. Token establecido en cookie segura." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            try
+            {
+                _service.Logout();
+                return Ok(new { mensaje = "Logout exitoso. Cookie eliminada." });
             }
             catch (Exception ex)
             {
