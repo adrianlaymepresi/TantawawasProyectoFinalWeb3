@@ -21,9 +21,20 @@ namespace backend.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<List<Usuario>> ObtenerTodosAsync()
+        public async Task<List<UsuarioObtenerDto>> ObtenerTodosAsync()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios.Include(u => u.Rol)
+                .Select(u => new UsuarioObtenerDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    CarnetIdentidad = u.CarnetIdentidad,
+                    Email = u.Email,
+                    RolId = u.RolId,
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : null
+                })
+                .ToListAsync();
         }
 
         public async Task<Usuario> ObtenerPorIdAsync(UsuarioIdDto dto)

@@ -79,4 +79,21 @@ namespace backend.Models.DTOs
         [Required]
         public string Password { get; set; } = string.Empty;
     }
+
+    public class UsuarioObtenerDto
+    {
+        public int Id { get; set; }
+
+        public string Nombres { get; set; } = string.Empty;
+
+        public string Apellidos { get; set; } = string.Empty;
+
+        public int CarnetIdentidad { get; set; }
+
+        public string Email { get; set; } = string.Empty;
+
+        public int RolId { get; set; }
+
+        public string? NombreRol { get; set; }
+    }
 }
