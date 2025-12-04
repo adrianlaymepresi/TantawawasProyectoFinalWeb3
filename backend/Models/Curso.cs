@@ -14,7 +14,7 @@ namespace backend.Models
 
         [Required]
         public int DocenteId { get; set; }
-        public Usuario Docente { get; set; } = null!;
+        public Usuario? Docente { get; set; }
 
         public List<Inscripcion> Inscripciones { get; set; } = new List<Inscripcion>();
         public List<Material> Materiales { get; set; } = new List<Material>();

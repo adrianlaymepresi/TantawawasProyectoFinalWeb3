@@ -16,7 +16,7 @@ namespace backend.Models
 
         [Required]
         public int CursoId { get; set; }
-        public Curso Curso { get; set; } = null!;
+        public Curso? Curso { get; set; }
 
         public List<ResultadoEvaluacion> Resultados { get; set; } = new List<ResultadoEvaluacion>();
     }

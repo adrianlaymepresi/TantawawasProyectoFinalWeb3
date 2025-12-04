@@ -25,6 +25,6 @@ namespace backend.Models
 
         [Required]
         public int RolId { get; set; }
-        public Rol Rol { get; set; } = null!;
+        public Rol? Rol { get; set; } 
     }
 }

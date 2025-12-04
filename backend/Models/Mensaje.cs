@@ -15,10 +15,10 @@ namespace backend.Models
 
         [Required]
         public int CursoId { get; set; }
-        public Curso Curso { get; set; } = null!;
+        public Curso? Curso { get; set; }
 
         [Required]
         public int UsuarioId { get; set; }
-        public Usuario Usuario { get; set; } = null!;
+        public Usuario? Usuario { get; set; }
     }
 }
