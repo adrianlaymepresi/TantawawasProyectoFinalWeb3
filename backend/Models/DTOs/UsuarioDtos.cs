@@ -82,18 +82,25 @@ namespace backend.Models.DTOs
 
     public class UsuarioObtenerDto
     {
+        [Required]
         public int Id { get; set; }
 
+        [Required, MaxLength(100)]
         public string Nombres { get; set; } = string.Empty;
 
+        [Required, MaxLength(100)]
         public string Apellidos { get; set; } = string.Empty;
 
+        [Required]
         public int CarnetIdentidad { get; set; }
 
+        [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
+        [Required]
         public int RolId { get; set; }
 
-        public string? NombreRol { get; set; }
+        [Required, MaxLength(50)]
+        public string NombreRol { get; set; } = string.Empty;
     }
 }

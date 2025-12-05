@@ -23,7 +23,8 @@ namespace backend.Services
 
         public async Task<List<UsuarioObtenerDto>> ObtenerTodosAsync()
         {
-            return await _context.Usuarios.Include(u => u.Rol)
+            var usuario = await _context.Usuarios
+                .Include(u => u.Rol)
                 .Select(u => new UsuarioObtenerDto
                 {
                     Id = u.Id,
@@ -32,14 +33,30 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : null
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "PapuMisterioso"
                 })
                 .ToListAsync();
+
+            return usuario;
         }
 
-        public async Task<Usuario> ObtenerPorIdAsync(UsuarioIdDto dto)
+        public async Task<UsuarioObtenerDto> ObtenerPorIdAsync(UsuarioIdDto dto)
         {
-            var usuario = await _context.Usuarios.FindAsync(dto.Id);
+            var usuario = await _context.Usuarios
+                .Include(u => u.Rol)
+                .Where(u => u.Id == dto.Id)
+                .Select(u => new UsuarioObtenerDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    CarnetIdentidad = u.CarnetIdentidad,
+                    Email = u.Email,
+                    RolId = u.RolId,
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "PapuMisterioso"
+                })
+                .FirstOrDefaultAsync();
+
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 
