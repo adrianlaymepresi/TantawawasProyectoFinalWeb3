@@ -15,9 +15,18 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<List<Material>> ObtenerTodosAsync()
+        public async Task<List<MaterialObtenerDto>> ObtenerTodosAsync()
         {
-            return await _context.Materiales.ToListAsync();
+            return await _context.Materiales.Include(m => m.Curso)
+                .Select(m => new MaterialObtenerDto
+                {
+                    Id = m.Id,
+                    Titulo = m.Titulo,
+                    ArchivoAdjunto = m.ArchivoAdjunto,
+                    FechaCreacion = m.FechaCreacion,
+                    CursoId = m.CursoId,
+                    CursoNombre = m.Curso != null ? m.Curso.Nombre : "Curso no identificado"
+                }).ToListAsync();
         }
 
         public async Task<List<Material>> ObtenerPorCursoAsync(int cursoId)

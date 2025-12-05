@@ -4,6 +4,7 @@ namespace backend.Models
 {
     public class Material
     {
+        [Required]
         public int Id { get; set; }
 
         [Required, MaxLength(150)]
