@@ -14,18 +14,41 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<List<Curso>> ObtenerTodosAsync()
+        public async Task<List<CursoDocenteObtenerDto>> ObtenerTodosAsync()
         {
-            return await _context.Cursos
+            var cursos = await _context.Cursos
                 .Include(c => c.Docente)
+                .Select(c => new CursoDocenteObtenerDto
+                {
+                    Id = c.Id,
+                    Nombre = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    DocenteId = c.DocenteId,
+                    Nombres = c.Docente != null ? c.Docente.Nombres : "Desconocido",
+                    Apellidos = c.Docente != null ? c.Docente.Apellidos : "Desconocido",
+                    CarnetIdentidad = c.Docente != null ? c.Docente.CarnetIdentidad : 0
+                })
                 .ToListAsync();
+
+            return cursos;
         }
 
-        public async Task<Curso> ObtenerPorIdAsync(CursoIdDto dto)
+        public async Task<CursoDocenteObtenerDto> ObtenerPorIdAsync(CursoIdDto dto)
         {
             var curso = await _context.Cursos
                 .Include(c => c.Docente)
-                .FirstOrDefaultAsync(c => c.Id == dto.Id);
+                .Where(c => c.Id == dto.Id)
+                .Select(c => new CursoDocenteObtenerDto
+                {
+                    Id = c.Id,
+                    Nombre = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    DocenteId = c.DocenteId,
+                    Nombres = c.Docente != null ? c.Docente.Nombres : "Desconocido",
+                    Apellidos = c.Docente != null ? c.Docente.Apellidos : "Desconocido",
+                    CarnetIdentidad = c.Docente != null ? c.Docente.CarnetIdentidad : 0
+                })
+                .FirstOrDefaultAsync();
 
             if (curso == null)
                 throw new Exception("Curso no encontrado");
