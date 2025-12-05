@@ -29,18 +29,37 @@ namespace backend.Services
                 }).ToListAsync();
         }
 
-        public async Task<List<Material>> ObtenerPorCursoAsync(int cursoId)
+        public async Task<List<MaterialSimpleDto>> ObtenerPorCursoAsync(int cursoId)
         {
             return await _context.Materiales
-                .Where(m => m.CursoId == cursoId).ToListAsync();
+                .Where(m => m.CursoId == cursoId)
+                .Select(m => new MaterialSimpleDto
+                {
+                    Id = m.Id,
+                    Titulo = m.Titulo,
+                    FechaCreacion = m.FechaCreacion
+                })
+                .ToListAsync();
         }
 
-        public async Task<Material> ObtenerPorIdAsync(MaterialIdDto dto)
+        public async Task<MaterialObtenerDto> ObtenerPorIdAsync(MaterialIdDto dto)
         {
-            var material = await _context.Materiales.FindAsync(dto.Id);
+            var material = await _context.Materiales
+                .Include(m => m.Curso)
+                .Where(m => m.Id == dto.Id)
+                .Select(m => new MaterialObtenerDto
+                {
+                    Id = m.Id,
+                    Titulo = m.Titulo,
+                    ArchivoAdjunto = m.ArchivoAdjunto,
+                    FechaCreacion = m.FechaCreacion,
+                    CursoId = m.CursoId,
+                    CursoNombre = m.Curso != null ? m.Curso.Nombre : "Curso no identificado"
+                })
+                .FirstOrDefaultAsync();
 
             if (material == null)
-                throw new Exception("Material del curso no encontrado");
+                throw new Exception("Material de curso no encontrado");
 
             return material;
         }
