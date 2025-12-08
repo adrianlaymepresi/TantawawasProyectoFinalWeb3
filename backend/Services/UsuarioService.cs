@@ -33,7 +33,7 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "PapuMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
                 })
                 .ToListAsync();
 
@@ -53,7 +53,7 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "PapuMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
                 })
                 .FirstOrDefaultAsync();
 
@@ -63,12 +63,23 @@ namespace backend.Services
             return usuario;
         }
 
-        public async Task<List<Usuario>> BuscarPorCarnetIdentidadAsync(UsuarioBuscarPorCI dto)
+        public async Task<List<UsuarioObtenerDto>> BuscarPorCarnetIdentidadAsync(UsuarioBuscarPorCI dto)
         {
             string ci = dto.CarnetIdentidad.Trim();
 
             var usuarios = await _context.Usuarios
+                .Include(u => u.Rol)
                 .Where(u => u.CarnetIdentidad.ToString().Contains(ci))
+                .Select(u => new UsuarioObtenerDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    CarnetIdentidad = u.CarnetIdentidad,
+                    Email = u.Email,
+                    RolId = u.RolId,
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                })
                 .ToListAsync();
 
             if (!usuarios.Any())
@@ -77,13 +88,24 @@ namespace backend.Services
             return usuarios;
         }
 
-        public async Task<List<Usuario>> BuscarPorNombreCompletoAsync(UsuarioBuscarPorNombreCompleto dto)
+        public async Task<List<UsuarioObtenerDto>> BuscarPorNombreCompletoAsync(UsuarioBuscarPorNombreCompleto dto)
         {
             string nombre = dto.NombreCompleto.Trim().ToLower();
 
             var usuarios = await _context.Usuarios
+                .Include(u => u.Rol)
                 .Where(u =>
                     (u.Nombres + " " + u.Apellidos).ToLower().Contains(nombre))
+                .Select(u => new UsuarioObtenerDto
+                {
+                    Id = u.Id,
+                    Nombres = u.Nombres,
+                    Apellidos = u.Apellidos,
+                    CarnetIdentidad = u.CarnetIdentidad,
+                    Email = u.Email,
+                    RolId = u.RolId,
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                })
                 .ToListAsync();
 
             if (!usuarios.Any())
@@ -92,7 +114,7 @@ namespace backend.Services
             return usuarios;
         }
 
-        public async Task<Usuario> CrearAsync(UsuarioCrearDto dto)
+        public async Task<UsuarioObtenerDto> CrearAsync(UsuarioCrearDto dto)
         {
             if (await _context.Usuarios.AnyAsync(u => u.Email == dto.Email))
                 throw new Exception("El email ya está registrado");
@@ -100,8 +122,11 @@ namespace backend.Services
             if (await _context.Usuarios.AnyAsync(u => u.CarnetIdentidad == dto.CarnetIdentidad))
                 throw new Exception("El carnet de identidad ya está registrado");
 
-            var rolExiste = await _context.Roles.AnyAsync(r => r.Id == dto.RolId);
-            if (!rolExiste)
+            if (dto.CarnetIdentidad < 1_000_000 || dto.CarnetIdentidad > 999_999_999)
+                throw new Exception("El carnet debe tener entre 7 y 9 dígitos.");
+
+            var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Id == dto.RolId);
+            if (rol == null)
                 throw new Exception("El rol especificado no existe");
 
             var usuario = new Usuario
@@ -117,20 +142,37 @@ namespace backend.Services
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return usuario;
+
+            return new UsuarioObtenerDto
+            {
+                Id = usuario.Id,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                CarnetIdentidad = usuario.CarnetIdentidad,
+                Email = usuario.Email,
+                RolId = usuario.RolId,
+                NombreRol = rol.NombreRol
+            };
         }
 
-        public async Task<Usuario> ActualizarAsync(UsuarioActualizarDto dto)
+        public async Task<UsuarioObtenerDto> ActualizarAsync(UsuarioActualizarDto dto)
         {
-            var usuario = await _context.Usuarios.FindAsync(dto.Id);
+            var usuario = await _context.Usuarios
+                .Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.Id == dto.Id);
+
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 
-            if (await _context.Usuarios.AnyAsync(u => u.CarnetIdentidad == dto.CarnetIdentidad && u.Id != dto.Id))
+            if (await _context.Usuarios.AnyAsync(u =>
+                u.CarnetIdentidad == dto.CarnetIdentidad && u.Id != dto.Id))
                 throw new Exception("El carnet de identidad ya está registrado por otro usuario");
 
-            var rolExiste = await _context.Roles.AnyAsync(r => r.Id == dto.RolId);
-            if (!rolExiste)
+            if (dto.CarnetIdentidad < 1_000_000 || dto.CarnetIdentidad > 999_999_999)
+                throw new Exception("El carnet debe tener entre 7 y 9 dígitos.");
+
+            var rol = await _context.Roles.FirstOrDefaultAsync(r => r.Id == dto.RolId);
+            if (rol == null)
                 throw new Exception("El rol especificado no existe");
 
             usuario.Nombres = dto.Nombres;
@@ -140,20 +182,42 @@ namespace backend.Services
             usuario.RolId = dto.RolId;
 
             await _context.SaveChangesAsync();
-            return usuario;
+
+            return new UsuarioObtenerDto
+            {
+                Id = usuario.Id,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                CarnetIdentidad = usuario.CarnetIdentidad,
+                Email = usuario.Email,
+                RolId = usuario.RolId,
+                NombreRol = rol.NombreRol
+            };
         }
 
-        public async Task<Usuario> ActualizarPasswordAsync(UsuarioActualizarPasswordDto dto)
+        public async Task CambiarPasswordAsync(UsuarioCambiarPasswordDto dto)
         {
             var usuario = await _context.Usuarios.FindAsync(dto.Id);
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 
-            usuario.Password = HashPassword(dto.NuevoPassword);
+            if (usuario.Password != HashPassword(dto.PasswordActual))
+                throw new Exception("La contraseña actual no es correcta");
 
+            usuario.Password = HashPassword(dto.NuevaPassword);
             await _context.SaveChangesAsync();
-            return usuario;
         }
+
+        public async Task ReestablecerPasswordAsync(UsuarioResetPasswordDto dto)
+        {
+            var usuario = await _context.Usuarios.FindAsync(dto.Id);
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            usuario.Password = HashPassword(dto.NuevaPassword);
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task<Usuario> EliminarLogicoAsync(UsuarioIdDto dto)
         {
@@ -162,17 +226,6 @@ namespace backend.Services
                 throw new Exception("Usuario no encontrado");
 
             usuario.EsUsuarioActivo = false;
-            await _context.SaveChangesAsync();
-            return usuario;
-        }
-
-        public async Task<Usuario> EliminarFisicoAsync(UsuarioIdDto dto)
-        {
-            var usuario = await _context.Usuarios.FindAsync(dto.Id);
-            if (usuario == null)
-                throw new Exception("Usuario no encontrado");
-
-            _context.Usuarios.Remove(usuario);
             await _context.SaveChangesAsync();
             return usuario;
         }

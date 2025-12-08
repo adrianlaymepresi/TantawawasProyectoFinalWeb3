@@ -11,6 +11,7 @@ namespace backend.Models.DTOs
         public string Apellidos { get; set; } = string.Empty;
 
         [Required]
+        [Range(1_000_000, 999_999_999, ErrorMessage = "El carnet debe tener entre 7 y 9 dígitos.")]
         public int CarnetIdentidad { get; set; }
 
         [Required, EmailAddress]
@@ -35,6 +36,7 @@ namespace backend.Models.DTOs
         public string Apellidos { get; set; } = string.Empty;
 
         [Required]
+        [Range(1_000_000, 999_999_999, ErrorMessage = "El carnet debe tener entre 7 y 9 dígitos.")]
         public int CarnetIdentidad { get; set; }
 
         [Required, EmailAddress]
@@ -44,13 +46,25 @@ namespace backend.Models.DTOs
         public int RolId { get; set; }
     }
 
-    public class UsuarioActualizarPasswordDto
+    public class UsuarioCambiarPasswordDto
     {
         [Required]
         public int Id { get; set; }
 
         [Required]
-        public string NuevoPassword { get; set; } = string.Empty;
+        public string PasswordActual { get; set; } = string.Empty;
+
+        [Required]
+        public string NuevaPassword { get; set; } = string.Empty;
+    }
+
+    public class UsuarioResetPasswordDto
+    {
+        [Required]
+        public int Id { get; set; }
+
+        [Required]
+        public string NuevaPassword { get; set; } = string.Empty;
     }
 
     public class UsuarioIdDto
@@ -74,6 +88,7 @@ namespace backend.Models.DTOs
     public class UsuarioLoginDto
     {
         [Required]
+        [Range(1_000_000, 999_999_999, ErrorMessage = "El carnet debe tener entre 7 y 9 dígitos.")]
         public int CarnetIdentidad { get; set; }
 
         [Required]
@@ -92,6 +107,7 @@ namespace backend.Models.DTOs
         public string Apellidos { get; set; } = string.Empty;
 
         [Required]
+        [Range(1_000_000, 999_999_999, ErrorMessage = "El carnet debe tener entre 7 y 9 dígitos.")]
         public int CarnetIdentidad { get; set; }
 
         [Required, EmailAddress]

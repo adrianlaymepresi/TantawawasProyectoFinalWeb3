@@ -13,6 +13,7 @@ namespace backend.Models
         public string Apellidos { get; set; } = string.Empty;
 
         [Required]
+        [Range(1_000_000, 999_999_999, ErrorMessage = "El carnet debe tener entre 7 y 9 dígitos.")]
         public int CarnetIdentidad { get; set; }
 
         [Required, EmailAddress]

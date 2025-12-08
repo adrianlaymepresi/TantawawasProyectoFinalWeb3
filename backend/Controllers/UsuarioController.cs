@@ -108,13 +108,28 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPut("actualizarPassword")]
-        public async Task<IActionResult> ActualizarPassword(UsuarioActualizarPasswordDto dto)
+        [HttpPut("cambiarPasswordUsuario")]
+        public async Task<IActionResult> CambiarPassword(UsuarioCambiarPasswordDto dto)
         {
             try
             {
-                var usuario = await _service.ActualizarPasswordAsync(dto);
-                return Ok(new { mensaje = "Password actualizado correctamente", usuario });
+                await _service.CambiarPasswordAsync(dto);
+                return Ok(new { mensaje = "Contraseña cambiada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [Authorize(Policy = "EsAdmin")]
+        [HttpPut("reestablecerPassword")]
+        public async Task<IActionResult> ReestablecerPassword(UsuarioResetPasswordDto dto)
+        {
+            try
+            {
+                await _service.ReestablecerPasswordAsync(dto);
+                return Ok(new { mensaje = "Contraseña restablecida correctamente" });
             }
             catch (Exception ex)
             {
@@ -129,21 +144,6 @@ namespace backend.Controllers
             {
                 var usuario = await _service.EliminarLogicoAsync(dto);
                 return Ok(new { mensaje = "Usuario desactivado", usuario });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-        }
-
-        [Authorize(Policy = "EsAdmin")]
-        [HttpDelete("eliminarUsuarioFisico")]
-        public async Task<IActionResult> EliminarUsuarioFisico(UsuarioIdDto dto)
-        {
-            try
-            {
-                var usuario = await _service.EliminarFisicoAsync(dto);
-                return Ok(new { mensaje = "Usuario eliminado permanentemente", usuario });
             }
             catch (Exception ex)
             {
