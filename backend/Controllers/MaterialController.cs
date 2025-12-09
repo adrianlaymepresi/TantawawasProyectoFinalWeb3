@@ -20,6 +20,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("obtenerMateriales")]
+        [Authorize(Policy = "EsAdmin")]
         public async Task<IActionResult> ObtenerTodos()
         {
             try
@@ -78,6 +79,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPost("crearMaterial")]
         public async Task<IActionResult> CrearMaterial(MaterialCrearDto dto)
         {
@@ -92,6 +94,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPut("actualizarMaterial")]
         public async Task<IActionResult> ActualizarMaterial(MaterialActualizarDto dto)
         {
@@ -106,8 +109,9 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpDelete("eliminarMaterial/{id}")]
-        public async Task<IActionResult> Eliminar(int id)
+        public async Task<IActionResult> EliminarMaterial(int id)
         {
             try
             {
