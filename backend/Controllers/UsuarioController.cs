@@ -32,6 +32,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerUsuarioPorId/{id}")]
         public async Task<IActionResult> ObtenerUsuarioPorId(int id)
         {
@@ -47,6 +48,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("buscarPorCI/{ci}")]
         public async Task<IActionResult> BuscarPorCI(string ci)
         {
@@ -63,6 +65,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("buscarPorNombreCompleto/{nombre}")]
         public async Task<IActionResult> BuscarPorNombreCompleto(string nombre)
         {
@@ -94,6 +97,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("actualizarUsuario")]
         public async Task<IActionResult> ActualizarUsuario(UsuarioActualizarDto dto)
         {
@@ -108,6 +112,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("cambiarPasswordUsuario")]
         public async Task<IActionResult> CambiarPassword(UsuarioCambiarPasswordDto dto)
         {
@@ -137,6 +142,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("eliminarUsuarioLogico")]
         public async Task<IActionResult> EliminarUsuarioLogico(UsuarioIdDto dto)
         {
@@ -166,6 +172,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public IActionResult Logout()
         {

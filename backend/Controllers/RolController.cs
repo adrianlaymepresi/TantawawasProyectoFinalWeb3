@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Policy = "EsAdmin")]
     public class RolController : ControllerBase
     {
         private readonly RolService _service;
