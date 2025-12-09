@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/curso")]
-    [Authorize]
+    [Authorize(Policy = "EsAdmin")]
     public class CursoController : ControllerBase
     {
         private readonly CursoService _service;
@@ -90,13 +90,27 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("eliminarCurso")]
-        public async Task<IActionResult> EliminarCurso(CursoIdDto dto)
+        [HttpPut("activarCurso")]
+        public async Task<IActionResult> ActivarCurso(CursoIdDto dto)
         {
             try
             {
-                var curso = await _service.EliminarFisicoAsync(dto);
-                return Ok(new { mensaje = "Curso eliminado correctamente", curso });
+                var curso = await _service.ActivarAsync(dto);
+                return Ok(new { mensaje = "Curso activado correctamente", curso });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [HttpPut("eliminarCursoLogico")]
+        public async Task<IActionResult> EliminarCursoLogico(CursoIdDto dto)
+        {
+            try
+            {
+                var curso = await _service.EliminarLogicoAsync(dto);
+                return Ok(new { mensaje = "Curso desactivado correctamente", curso });
             }
             catch (Exception ex)
             {

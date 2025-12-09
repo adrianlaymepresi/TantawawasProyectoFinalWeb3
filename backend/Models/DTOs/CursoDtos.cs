@@ -63,5 +63,8 @@ namespace backend.Models.DTOs
 
         [Required]
         public int CarnetIdentidad { get; set; }
+
+        [Required]
+        public bool EsActivo { get; set; }
     }
 }

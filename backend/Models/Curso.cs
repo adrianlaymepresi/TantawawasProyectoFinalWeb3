@@ -12,6 +12,8 @@ namespace backend.Models
         [MaxLength(300)]
         public string Descripcion { get; set; } = string.Empty;
 
+        public bool EsActivo { get; set; } = true;
+
         [Required]
         public int DocenteId { get; set; }
         public Usuario? Docente { get; set; }
