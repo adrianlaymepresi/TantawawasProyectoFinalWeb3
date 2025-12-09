@@ -84,6 +84,20 @@ namespace backend.Services
             return cursos;
         }
 
+        public async Task<List<CursoUsuarioObtenerDto>> ObtenerPorDocenteAsync(int docenteId)
+        {
+            return await _context.Cursos
+                .Where(c => c.DocenteId == docenteId)
+                .Select(c => new CursoUsuarioObtenerDto
+                {
+                    Id = c.Id,
+                    Nombre = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    EsActivo = c.EsActivo
+                })
+                .ToListAsync();
+        }
+
         public async Task<CursoDocenteObtenerDto> CrearAsync(CursoCrearDto dto)
         {
             var docente = await _context.Usuarios

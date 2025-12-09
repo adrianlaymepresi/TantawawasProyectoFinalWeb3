@@ -67,4 +67,19 @@ namespace backend.Models.DTOs
         [Required]
         public bool EsActivo { get; set; }
     }
+
+    public class CursoUsuarioObtenerDto
+    {
+        [Required]
+        public int Id { get; set; }
+
+        [Required, MaxLength(150)]
+        public string Nombre { get; set; } = string.Empty;
+
+        [MaxLength(300)]
+        public string Descripcion { get; set; } = string.Empty;
+
+        [Required]
+        public bool EsActivo { get; set; }
+    }
 }

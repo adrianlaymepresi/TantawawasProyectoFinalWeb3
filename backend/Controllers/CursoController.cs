@@ -62,6 +62,21 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
+        [HttpGet("buscarPorDocente/{docenteId}")]
+        public async Task<IActionResult> BuscarPorDocente(int docenteId)
+        {
+            try
+            {
+                var cursos = await _service.ObtenerPorDocenteAsync(docenteId);
+                return Ok(cursos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
         [HttpPost("crearCurso")]
         public async Task<IActionResult> CrearCurso(CursoCrearDto dto)
         {
