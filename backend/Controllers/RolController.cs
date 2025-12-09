@@ -46,6 +46,7 @@ namespace backend.Controllers
             }
         }
 
+        /*
         [HttpPost("crearRol")]
         public async Task<IActionResult> Crear(RolCrearDto dto)
         {
@@ -74,6 +75,7 @@ namespace backend.Controllers
             }
         }
 
+        
         [HttpDelete("eliminarRol")]
         public async Task<IActionResult> Eliminar(RolIdDto dto)
         {
@@ -87,5 +89,6 @@ namespace backend.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+        */
     }
 }

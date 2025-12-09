@@ -184,6 +184,7 @@ namespace backend.Services
             };
         }
 
+        /*
         public async Task<EvaluacionObtenerDto> EliminarFisicoAsync(int id)
         {
             var evaluacion = await _context.Evaluaciones
@@ -211,5 +212,6 @@ namespace backend.Services
             
             return evaluacionDto;
         }
+        */
     }
 }

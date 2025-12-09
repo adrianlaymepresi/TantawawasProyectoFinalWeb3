@@ -123,6 +123,7 @@ namespace backend.Controllers
             }
         }
 
+        /*
         [Authorize(Policy = "EsDocente")]
         [HttpDelete("eliminarEvaluacion/{id}")]
         public async Task<IActionResult> EliminarEvaluacion(int id)
@@ -137,5 +138,6 @@ namespace backend.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        */
     }
 }

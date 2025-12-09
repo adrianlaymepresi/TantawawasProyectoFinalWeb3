@@ -28,6 +28,7 @@ namespace backend.Services
             return rol;
         }
 
+        /*
         public async Task<Rol> CrearAsync(RolCrearDto dto)
         {
             if (await _context.Roles.AnyAsync(r => r.NombreRol == dto.NombreRol))
@@ -55,6 +56,7 @@ namespace backend.Services
             return rol;
         }
 
+        
         public async Task<Rol> EliminarFisicoAsync(RolIdDto dto)
         {
             var rol = await _context.Roles.FindAsync(dto.Id);
@@ -65,5 +67,6 @@ namespace backend.Services
             await _context.SaveChangesAsync();
             return rol;
         }
+        */
     }
 }
