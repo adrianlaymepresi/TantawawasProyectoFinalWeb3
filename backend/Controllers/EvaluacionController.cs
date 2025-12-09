@@ -7,8 +7,8 @@ using backend.Services;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
     public class EvaluacionController : ControllerBase
     {
         private readonly EvaluacionService _service;
@@ -18,6 +18,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerEvaluaciones")]
         public async Task<IActionResult> ObtenerTodos()
         {
@@ -29,6 +30,20 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("obtenerEvaluacionPorId/{id}")]
+        public async Task<IActionResult> ObtenerPorId(int id)
+        {
+            try
+            {
+                var evaluacion = await _service.ObtenerPorIdAsync(id);
+                return Ok(evaluacion);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
         }
 
@@ -46,29 +61,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("obtenerEvaluacionPorId/{id}")]
-        public async Task<IActionResult> ObtenerPorId(int id)
-        {
-            try
-            {
-                var evaluacion = await _service.ObtenerPorIdAsync(new EvaluacionIdDto { Id = id });
-                return Ok(evaluacion);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("buscarEvaluacionPorTitulo/{titulo}")]
-        public async Task<IActionResult> BuscarPorTitulo(string titulo)
+        [HttpGet("buscarEvaluacionPorTitulo/{cursoId}/{titulo}")]
+        public async Task<IActionResult> BuscarPorTitulo(int cursoId, string titulo)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(titulo))
                     return BadRequest(new { message = "El título de búsqueda no puede estar vacío" });
 
-                var evaluaciones = await _service.BuscarPorTituloAsync(titulo);
+                var evaluaciones = await _service.BuscarPorTituloAsync(cursoId, titulo);
                 return Ok(evaluaciones);
             }
             catch (Exception ex)
@@ -77,6 +78,22 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
+        [HttpGet("obtenerResultadosEvaluacion/{evaluacionId}")]
+        public async Task<IActionResult> ObtenerResultadosEvaluacion(int evaluacionId)
+        {
+            try
+            {
+                var resultados = await _service.ObtenerResultadosPorEvaluacionAsync(evaluacionId);
+                return Ok(resultados);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost("crearEvaluacion")]
         public async Task<IActionResult> CrearEvaluacion(EvaluacionCrearDto dto)
         {
@@ -91,6 +108,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPut("actualizarEvaluacion")]
         public async Task<IActionResult> ActualizarEvaluacion(EvaluacionActualizarDto dto)
         {
@@ -105,12 +123,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("eliminarEvaluacion")]
-        public async Task<IActionResult> EliminarEvaluacion(EvaluacionIdDto dto)
+        [Authorize(Policy = "EsDocente")]
+        [HttpDelete("eliminarEvaluacion/{id}")]
+        public async Task<IActionResult> EliminarEvaluacion(int id)
         {
             try
             {
-                var evaluacion = await _service.EliminarFisicoAsync(dto);
+                var evaluacion = await _service.EliminarFisicoAsync(id);
                 return Ok(new { message = "Evaluación eliminada exitosamente", evaluacion });
             }
             catch (Exception ex)

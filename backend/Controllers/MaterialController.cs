@@ -79,7 +79,7 @@ namespace backend.Controllers
             }
         }
 
-        [Authorize(Policy = "EsDocente")]
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost("crearMaterial")]
         public async Task<IActionResult> CrearMaterial(MaterialCrearDto dto)
         {

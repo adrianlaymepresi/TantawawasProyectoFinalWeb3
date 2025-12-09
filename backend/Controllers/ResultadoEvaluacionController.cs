@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiController]
     public class ResultadoEvaluacionController : ControllerBase
     {
         private readonly ResultadoEvaluacionService _service;
@@ -18,6 +18,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerResultados")]
         public async Task<IActionResult> ObtenerTodos()
         {
@@ -32,6 +33,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpGet("obtenerResultadosPorEvaluacion/{evaluacionId}")]
         public async Task<IActionResult> ObtenerPorEvaluacion(int evaluacionId)
         {
@@ -60,12 +62,26 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("obtenerResultadosEstudiantePorCurso/{estudianteId}/{cursoId}")]
+        public async Task<IActionResult> ObtenerPorEstudianteYCurso(int estudianteId, int cursoId)
+        {
+            try
+            {
+                var resultados = await _service.ObtenerResultadosPorEstudianteYCursoAsync(estudianteId, cursoId);
+                return Ok(resultados);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("obtenerResultadoPorId/{id}")]
         public async Task<IActionResult> ObtenerPorId(int id)
         {
             try
             {
-                var resultado = await _service.ObtenerPorIdAsync(new ResultadoEvaluacionIdDto { Id = id });
+                var resultado = await _service.ObtenerPorIdAsync(id);
                 return Ok(resultado);
             }
             catch (Exception ex)
@@ -74,6 +90,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost("crearResultado")]
         public async Task<IActionResult> CrearResultado(ResultadoEvaluacionCrearDto dto)
         {
@@ -88,6 +105,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPut("actualizarResultado")]
         public async Task<IActionResult> ActualizarResultado(ResultadoEvaluacionActualizarDto dto)
         {
@@ -102,12 +120,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("eliminarResultado")]
-        public async Task<IActionResult> EliminarResultado(ResultadoEvaluacionIdDto dto)
+        [Authorize(Policy = "EsDocente")]
+        [HttpDelete("eliminarResultado/{id}")]
+        public async Task<IActionResult> EliminarResultado(int id)
         {
             try
             {
-                var resultado = await _service.EliminarFisicoAsync(dto);
+                var resultado = await _service.EliminarFisicoAsync(id);
                 return Ok(new { message = "Resultado de evaluación eliminado exitosamente", resultado });
             }
             catch (Exception ex)

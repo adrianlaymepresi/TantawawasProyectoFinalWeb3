@@ -76,7 +76,7 @@ namespace backend.Controllers
             }
         }
 
-        [Authorize(Policy = "EsDocente")]
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost("crearMensaje")]
         public async Task<IActionResult> CrearMensaje(MensajeCrearDto dto)
         {
