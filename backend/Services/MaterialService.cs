@@ -2,7 +2,6 @@
 using backend.Models;
 using backend.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace backend.Services
 {
@@ -42,11 +41,11 @@ namespace backend.Services
                 .ToListAsync();
         }
 
-        public async Task<MaterialObtenerDto> ObtenerPorIdAsync(MaterialIdDto dto)
+        public async Task<MaterialObtenerDto> ObtenerPorIdAsync(int id)
         {
             var material = await _context.Materiales
                 .Include(m => m.Curso)
-                .Where(m => m.Id == dto.Id)
+                .Where(m => m.Id == id)
                 .Select(m => new MaterialObtenerDto
                 {
                     Id = m.Id,
@@ -64,24 +63,30 @@ namespace backend.Services
             return material;
         }
 
-        public async Task<List<Material>> BuscarPorTituloAsync(string titulo)
+        public async Task<List<MaterialSimpleDto>> BuscarPorTituloAsync(int cursoId, string titulo)
         {
             var materiales = await _context.Materiales
-                .Where(m => m.Titulo.ToLower().Contains(titulo.Trim().ToLower()))
                 .Include(m => m.Curso)
+                .Where(m => m.CursoId == cursoId && m.Titulo.ToLower().Contains(titulo.Trim().ToLower()))
                 .OrderByDescending(m => m.FechaCreacion)
+                .Select(m => new MaterialSimpleDto
+                {
+                    Id = m.Id,
+                    Titulo = m.Titulo,
+                    FechaCreacion = m.FechaCreacion
+                })
                 .ToListAsync();
 
             if (!materiales.Any())
-                throw new Exception("No se encontraron materiales con ese título");
+                throw new Exception("No se encontraron materiales con ese título en este curso");
 
             return materiales;
         }
 
-        public async Task<Material> CrearAsync(MaterialCrearDto dto)
+        public async Task<MaterialObtenerDto> CrearAsync(MaterialCrearDto dto)
         {
-            var cursoExiste = await _context.Cursos.AnyAsync(c => c.Id == dto.CursoId);
-            if (!cursoExiste)
+            var curso = await _context.Cursos.FindAsync(dto.CursoId);
+            if (curso == null)
                 throw new Exception("El curso especificado no existe");
 
             var material = new Material
@@ -95,17 +100,27 @@ namespace backend.Services
             _context.Materiales.Add(material);
             await _context.SaveChangesAsync();
 
-            return material;
+            return new MaterialObtenerDto
+            {
+                Id = material.Id,
+                Titulo = material.Titulo,
+                ArchivoAdjunto = material.ArchivoAdjunto,
+                FechaCreacion = material.FechaCreacion,
+                CursoId = material.CursoId,
+                CursoNombre = curso.Nombre
+            };
         }
 
-        public async Task<Material> ActualizarAsync(MaterialActualizarDto dto)
+        public async Task<MaterialObtenerDto> ActualizarAsync(MaterialActualizarDto dto)
         {
-            var material = await _context.Materiales.FindAsync(dto.Id);
+            var material = await _context.Materiales
+                .Include(m => m.Curso)
+                .FirstOrDefaultAsync(m => m.Id == dto.Id);
+            
             if (material == null)
                 throw new Exception("Material de curso no encontrado");
 
-            var cursoExiste = await _context.Cursos.AnyAsync(c => c.Id == material.CursoId);
-            if (!cursoExiste)
+            if (material.Curso == null)
                 throw new Exception("El curso asignado al material ya no existe");
 
             if (!string.IsNullOrEmpty(dto.Titulo))
@@ -115,18 +130,41 @@ namespace backend.Services
                 material.ArchivoAdjunto = dto.ArchivoAdjunto;
 
             await _context.SaveChangesAsync();
-            return material;
+            
+            return new MaterialObtenerDto
+            {
+                Id = material.Id,
+                Titulo = material.Titulo,
+                ArchivoAdjunto = material.ArchivoAdjunto,
+                FechaCreacion = material.FechaCreacion,
+                CursoId = material.CursoId,
+                CursoNombre = material.Curso.Nombre
+            };
         }
 
-        public async Task<Material> EliminarFisicoAsync(MaterialIdDto dto)
+        public async Task<MaterialObtenerDto> EliminarFisicoAsync(int id)
         {
-            var material = await _context.Materiales.FindAsync(dto.Id);
+            var material = await _context.Materiales
+                .Include(m => m.Curso)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
             if (material == null)
                 throw new Exception("Material de curso no encontrado");
 
+            var materialDto = new MaterialObtenerDto
+            {
+                Id = material.Id,
+                Titulo = material.Titulo,
+                ArchivoAdjunto = material.ArchivoAdjunto,
+                FechaCreacion = material.FechaCreacion,
+                CursoId = material.CursoId,
+                CursoNombre = material.Curso != null ? material.Curso.Nombre : "Curso no identificado"
+            };
+
             _context.Materiales.Remove(material);
             await _context.SaveChangesAsync();
-            return material;
+            
+            return materialDto;
         }
     }
 }

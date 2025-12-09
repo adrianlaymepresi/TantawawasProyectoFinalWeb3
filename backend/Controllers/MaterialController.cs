@@ -52,7 +52,7 @@ namespace backend.Controllers
         {
             try
             {
-                var material = await _service.ObtenerPorIdAsync(new MaterialIdDto { Id = id });
+                var material = await _service.ObtenerPorIdAsync(id);
                 return Ok(material);
             }
             catch (Exception ex)
@@ -61,15 +61,15 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("buscarMaterialPorTitulo/{titulo}")]
-        public async Task<IActionResult> BuscarPorTitulo(string titulo)
+        [HttpGet("buscarMaterialPorTitulo/{cursoId}/{titulo}")]
+        public async Task<IActionResult> BuscarPorTitulo(int cursoId, string titulo)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(titulo))
                     return BadRequest(new { message = "El título de búsqueda no puede estar vacío" });
 
-                var materiales = await _service.BuscarPorTituloAsync(titulo);
+                var materiales = await _service.BuscarPorTituloAsync(cursoId, titulo);
                 return Ok(materiales);
             }
             catch (Exception ex)
@@ -106,12 +106,12 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("eliminarMaterial")]
-        public async Task<IActionResult> Eliminar(MaterialIdDto dto)
+        [HttpDelete("eliminarMaterial/{id}")]
+        public async Task<IActionResult> Eliminar(int id)
         {
             try
             {
-                var material = await _service.EliminarFisicoAsync(dto);
+                var material = await _service.EliminarFisicoAsync(id);
                 return Ok(new { message = "Material eliminado exitosamente", material });
             }
             catch (Exception ex)
