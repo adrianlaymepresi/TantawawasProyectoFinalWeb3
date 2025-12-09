@@ -8,7 +8,7 @@ namespace backend.Models
 
         [Required]
         public int EstudianteId { get; set; }
-        public Usuario Estudiante { get; set; } = null!;
+        public Usuario? Estudiante { get; set; }
 
         [Required]
         public int CursoId { get; set; }

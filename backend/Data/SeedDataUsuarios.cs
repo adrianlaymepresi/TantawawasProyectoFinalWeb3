@@ -62,6 +62,22 @@ namespace backend.Data
                 context.Usuarios.AddRange(admin, docente, estudiante);
                 await context.SaveChangesAsync();
             }
+
+            if (!context.Cursos.Any())
+            {
+                var docente = context.Usuarios.First(u =>
+                    u.RolId == context.Roles.First(r => r.NombreRol == "Docente").Id
+                );
+
+                context.Cursos.AddRange(new List<Curso>
+                {
+                    new Curso { Nombre = "Programacion Web III", Descripcion = "Curso avanzado de desarrollo web", DocenteId = docente.Id, EsActivo = true },
+                    new Curso { Nombre = "Programacion Movil II", Descripcion = "Curso de desarrollo móvil con Android", DocenteId = docente.Id, EsActivo = true },
+                    new Curso { Nombre = "Ingenieria de Software", Descripcion = "Metodologías y arquitectura de software", DocenteId = docente.Id, EsActivo = true }
+                });
+
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

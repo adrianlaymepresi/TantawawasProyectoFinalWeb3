@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/inscripcion")]
-    [Authorize]
+    [Authorize(Policy = "EsAdmin")]
     public class InscripcionController : ControllerBase
     {
         private readonly InscripcionService _service;
