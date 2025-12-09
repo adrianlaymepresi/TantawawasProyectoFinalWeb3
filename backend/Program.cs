@@ -70,6 +70,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 context.Token = token;
                 return Task.CompletedTask;
+            },
+
+            OnChallenge = context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+
+                var result = "{ \"error\": \"Debes iniciar sesión para acceder a este recurso.\" }";
+                return context.Response.WriteAsync(result);
+            },
+
+            OnForbidden = context =>
+            {
+                context.Response.StatusCode = 403;
+                context.Response.ContentType = "application/json";
+
+                var result = "{ \"error\": \"No tienes permisos para realizar esta acción.\" }";
+                return context.Response.WriteAsync(result);
             }
         };
     });
