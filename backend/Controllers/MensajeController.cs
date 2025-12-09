@@ -18,6 +18,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerMensajes")]
         public async Task<IActionResult> ObtenerTodos()
         {
@@ -46,6 +47,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerMensajesPorUsuario/{usuarioId}")]
         public async Task<IActionResult> ObtenerPorUsuario(int usuarioId)
         {
@@ -65,7 +67,7 @@ namespace backend.Controllers
         {
             try
             {
-                var mensaje = await _service.ObtenerPorIdAsync(new MensajeIdDto { Id = id });
+                var mensaje = await _service.ObtenerPorIdAsync(id);
                 return Ok(mensaje);
             }
             catch (Exception ex)
@@ -74,6 +76,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPost("crearMensaje")]
         public async Task<IActionResult> CrearMensaje(MensajeCrearDto dto)
         {
@@ -88,6 +91,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDocente")]
         [HttpPut("actualizarMensaje")]
         public async Task<IActionResult> ActualizarMensaje(MensajeActualizarDto dto)
         {
@@ -102,12 +106,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("eliminarMensaje")]
-        public async Task<IActionResult> EliminarMensaje(MensajeIdDto dto)
+        [Authorize(Policy = "EsDocente")]
+        [HttpDelete("eliminarMensaje/{id}")]
+        public async Task<IActionResult> EliminarMensaje(int id)
         {
             try
             {
-                var mensaje = await _service.EliminarFisicoAsync(dto);
+                var mensaje = await _service.EliminarFisicoAsync(id);
                 return Ok(new { message = "Mensaje eliminado exitosamente", mensaje });
             }
             catch (Exception ex)
