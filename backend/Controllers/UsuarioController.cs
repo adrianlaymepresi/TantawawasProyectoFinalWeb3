@@ -143,6 +143,21 @@ namespace backend.Controllers
         }
 
         [Authorize(Policy = "EsAdmin")]
+        [HttpPut("activarUsuario")]
+        public async Task<IActionResult> ActivarUsuario(UsuarioIdDto dto)
+        {
+            try
+            {
+                var usuario = await _service.ActivarAsync(dto);
+                return Ok(new { mensaje = "Usuario activado correctamente", usuario });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("eliminarUsuarioLogico")]
         public async Task<IActionResult> EliminarUsuarioLogico(UsuarioIdDto dto)
         {

@@ -3,6 +3,7 @@ using backend.Models;
 using backend.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -33,7 +34,8 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso",
+                    EsUsuarioActivo = u.EsUsuarioActivo
                 })
                 .ToListAsync();
 
@@ -53,7 +55,8 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso",
+                    EsUsuarioActivo = u.EsUsuarioActivo
                 })
                 .FirstOrDefaultAsync();
 
@@ -78,7 +81,8 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso",
+                    EsUsuarioActivo = u.EsUsuarioActivo
                 })
                 .ToListAsync();
 
@@ -94,8 +98,7 @@ namespace backend.Services
 
             var usuarios = await _context.Usuarios
                 .Include(u => u.Rol)
-                .Where(u =>
-                    (u.Nombres + " " + u.Apellidos).ToLower().Contains(nombre))
+                .Where(u => (u.Nombres + " " + u.Apellidos).ToLower().Contains(nombre))
                 .Select(u => new UsuarioObtenerDto
                 {
                     Id = u.Id,
@@ -104,7 +107,8 @@ namespace backend.Services
                     CarnetIdentidad = u.CarnetIdentidad,
                     Email = u.Email,
                     RolId = u.RolId,
-                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso"
+                    NombreRol = u.Rol != null ? u.Rol.NombreRol : "UsuarioMisterioso",
+                    EsUsuarioActivo = u.EsUsuarioActivo
                 })
                 .ToListAsync();
 
@@ -151,7 +155,8 @@ namespace backend.Services
                 CarnetIdentidad = usuario.CarnetIdentidad,
                 Email = usuario.Email,
                 RolId = usuario.RolId,
-                NombreRol = rol.NombreRol
+                NombreRol = rol.NombreRol,
+                EsUsuarioActivo = usuario.EsUsuarioActivo
             };
         }
 
@@ -163,6 +168,10 @@ namespace backend.Services
 
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
+
+            if (await _context.Usuarios.AnyAsync(u =>
+                u.Email == dto.Email && u.Id != dto.Id))
+                throw new Exception("El email ya está registrado por otro usuario");
 
             if (await _context.Usuarios.AnyAsync(u =>
                 u.CarnetIdentidad == dto.CarnetIdentidad && u.Id != dto.Id))
@@ -191,7 +200,8 @@ namespace backend.Services
                 CarnetIdentidad = usuario.CarnetIdentidad,
                 Email = usuario.Email,
                 RolId = usuario.RolId,
-                NombreRol = rol.NombreRol
+                NombreRol = rol.NombreRol,
+                EsUsuarioActivo = usuario.EsUsuarioActivo
             };
         }
 
@@ -218,16 +228,60 @@ namespace backend.Services
             await _context.SaveChangesAsync();
         }
 
-
-        public async Task<Usuario> EliminarLogicoAsync(UsuarioIdDto dto)
+        public async Task<UsuarioObtenerDto> ActivarAsync(UsuarioIdDto dto)
         {
-            var usuario = await _context.Usuarios.FindAsync(dto.Id);
+            var usuario = await _context.Usuarios.Include(u => u.Rol).FirstOrDefaultAsync(u => u.Id == dto.Id);
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            usuario.EsUsuarioActivo = true;
+            await _context.SaveChangesAsync();
+
+            return new UsuarioObtenerDto
+            {
+                Id = usuario.Id,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                CarnetIdentidad = usuario.CarnetIdentidad,
+                Email = usuario.Email,
+                RolId = usuario.RolId,
+                NombreRol = usuario.Rol?.NombreRol ?? "",
+                EsUsuarioActivo = usuario.EsUsuarioActivo
+            };
+        }
+
+        public async Task<UsuarioObtenerDto> EliminarLogicoAsync(UsuarioIdDto dto)
+        {
+            var idClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (idClaim == null)
+                throw new Exception("No se pudo validar el usuario actual.");
+
+            int idUsuarioActual = int.Parse(idClaim);
+
+            if (dto.Id == idUsuarioActual)
+                throw new Exception("No puedes desactivar tu propia cuenta.");
+
+            var usuario = await _context.Usuarios.Include(u => u.Rol)
+                .FirstOrDefaultAsync(u => u.Id == dto.Id);
+
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 
             usuario.EsUsuarioActivo = false;
             await _context.SaveChangesAsync();
-            return usuario;
+
+            return new UsuarioObtenerDto
+            {
+                Id = usuario.Id,
+                Nombres = usuario.Nombres,
+                Apellidos = usuario.Apellidos,
+                CarnetIdentidad = usuario.CarnetIdentidad,
+                Email = usuario.Email,
+                RolId = usuario.RolId,
+                NombreRol = usuario.Rol?.NombreRol ?? "",
+                EsUsuarioActivo = usuario.EsUsuarioActivo
+            };
         }
 
         public async Task<string> LoginAsync(UsuarioLoginDto dto)
