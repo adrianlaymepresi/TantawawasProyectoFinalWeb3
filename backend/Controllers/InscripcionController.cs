@@ -65,7 +65,7 @@ namespace backend.Controllers
             }
         }
 
-        [Authorize(Policy = "EsAdmin")]
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpGet("buscarEstudiantesPorCurso/{cursoId}")]
         public async Task<IActionResult> BuscarEstudiantesPorCurso(int cursoId)
         {
