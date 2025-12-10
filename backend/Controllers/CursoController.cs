@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/curso")]
-    [Authorize(Policy = "EsAdmin")]
+    [Authorize]
     public class CursoController : ControllerBase
     {
         private readonly CursoService _service;
@@ -17,6 +17,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerCursos")]
         public async Task<IActionResult> ObtenerCursos()
         {
@@ -31,6 +32,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("obtenerCursoPorId/{id}")]
         public async Task<IActionResult> ObtenerCursoPorId(int id)
         {
@@ -46,6 +48,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("buscarPorNombre/{nombre}")]
         public async Task<IActionResult> BuscarPorNombre(string nombre)
         {
@@ -77,6 +80,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPost("crearCurso")]
         public async Task<IActionResult> CrearCurso(CursoCrearDto dto)
         {
@@ -91,6 +95,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("actualizarCurso")]
         public async Task<IActionResult> ActualizarCurso(CursoActualizarDto dto)
         {
@@ -105,6 +110,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("activarCurso")]
         public async Task<IActionResult> ActivarCurso(CursoIdDto dto)
         {
@@ -119,6 +125,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("eliminarCursoLogico")]
         public async Task<IActionResult> EliminarCursoLogico(CursoIdDto dto)
         {

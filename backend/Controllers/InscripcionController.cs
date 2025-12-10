@@ -7,7 +7,7 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/inscripcion")]
-    [Authorize(Policy = "EsAdmin")]
+    [Authorize]
     public class InscripcionController : ControllerBase
     {
         private readonly InscripcionService _service;
@@ -17,6 +17,7 @@ namespace backend.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerInscripciones")]
         public async Task<IActionResult> ObtenerInscripciones()
         {
@@ -31,6 +32,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("obtenerInscripcionPorId/{id}")]
         public async Task<IActionResult> ObtenerInscripcionPorId(int id)
         {
@@ -46,6 +48,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("buscarCursosPorEstudiante/{estudianteId}")]
         public async Task<IActionResult> BuscarCursosPorEstudiante(int estudianteId)
         {
@@ -62,6 +65,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpGet("buscarEstudiantesPorCurso/{cursoId}")]
         public async Task<IActionResult> BuscarEstudiantesPorCurso(int cursoId)
         {
@@ -78,6 +82,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPost("crearInscripcion")]
         public async Task<IActionResult> CrearInscripcion(InscripcionCrearDto dto)
         {
@@ -92,6 +97,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpPut("actualizarInscripcion")]
         public async Task<IActionResult> ActualizarInscripcion(InscripcionActualizarDto dto)
         {
@@ -106,6 +112,7 @@ namespace backend.Controllers
             }
         }
 
+        [Authorize(Policy = "EsAdmin")]
         [HttpDelete("eliminarInscripcion")]
         public async Task<IActionResult> EliminarInscripcion(InscripcionIdDto dto)
         {
